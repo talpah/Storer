@@ -3,7 +3,10 @@ window.onload = function () {
     finder = new Finder('#results', '#list-item-template', '#list-buttons-create-template', '#list-buttons-update-template');
 
     var searchBox = document.querySelector('#search');
-    var searchResults = [];
+    var searchResults = store.findAll();
+    finder.setResults(searchResults);
+    finder.render();
+
     searchBox.onkeypress = function (e) {
         if (e.keyCode == 13) {
             var words = cleanArray(searchBox.value.split(' '), '');
@@ -29,11 +32,9 @@ window.onload = function () {
                 if (location) {
                     if (locationsFound.indexOf(location) == -1) {
                         proposeAdd = new Item(searchedItem, location, 'Create 1', true);
-                        proposeAdd.actions = '<button>CREATE</button>';
                     }
                 } else {
                     proposeAdd = new Item(searchBox.value, '...', 'Create 1', true);
-                    proposeAdd.actions = 'type a location above';
                 }
                 if (proposeAdd) {
                     searchResults.unshift(proposeAdd);

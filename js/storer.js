@@ -53,7 +53,6 @@ function Storer() {
     };
 
     this.add = function (item) {
-        var itemKey = this.find(item.name);
         return this._insert(item);
     };
 
@@ -77,12 +76,16 @@ function Storer() {
 
         /* Find item by name */
         for (var nsr in this._items) {
-            if (this._items[nsr].indexOf(name) > -1 && nsr != key) {
-                results.push(
-                    new Item(
-                        this._items[nsr],
-                        this._locations[this._item2location[nsr].location],
-                        this._item2location[nsr].amount));
+            if (this._items.hasOwnProperty(nsr)) {
+                if (this._items[nsr].indexOf(name) > -1 && nsr != key) {
+                    results.push(
+                        new Item(
+                            this._items[nsr],
+                            this._locations[this._item2location[nsr].location],
+                            this._item2location[nsr].amount,
+                            false
+                        ));
+                }
             }
         }
 
@@ -91,11 +94,27 @@ function Storer() {
         return results;
     };
 
-    this._insert = function (item) {
-        if (typeof (item) !== "Item") {
-            throw new Error('Invalid Item specified for insert');
+    /**
+     *
+     * @returns {Array}
+     */
+    this.findAll = function () {
+        var results = [];
+        for (var nsr in this._items) {
+            if (this._items.hasOwnProperty(nsr)) {
+                results.push(
+                    new Item(
+                        this._items[nsr],
+                        this._locations[this._item2location[nsr].location],
+                        this._item2location[nsr].amount,
+                        false
+                    ));
+            }
         }
+        return results;
+    };
 
+    this._insert = function (item) {
         if (!this._items.hasOwnProperty(this._getKey(item.name))) {
             this._items[this._getKey(item.name)] = item.name;
             this._save('items', this._items);

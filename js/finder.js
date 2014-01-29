@@ -26,8 +26,13 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
     };
 
     this.render = function () {
-        var $this=this;
         this._container.innerHTML = '';
+        if (this._results.length == 0) {
+            this._container.appendChild(
+                document.createElement('span').appendChild(document.createTextNode('Nothing found.'))
+            );
+            return;
+        }
         for (var resultIndex in this._results) {
             if (!this._results.hasOwnProperty(resultIndex)) {
                 continue;
@@ -39,21 +44,19 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
             listTemplate.querySelector('.amount').textContent = result.amount;
             if (result.isVirtual) {
                 var createButton = this.createNodesFromTemplate('create');
-                createButton.querySelector('button').setAttribute();
+                createButton.querySelector('button').setAttribute('id', 'create-item-' + result.key);
+                createButton.querySelector('button').setAttribute('data', JSON.stringify(result));
                 listTemplate.querySelector('.actions').innerHTML = '';
                 listTemplate.querySelector('.actions').appendChild(createButton);
-                console.log(
-                    listTemplate.querySelector('#mata'),
-                    listTemplate.querySelector('#mata').addEventListener('click',this.clickCreate, true)
-                );
+                listTemplate.querySelector('#create-item-' + result.key).addEventListener('click', this.clickCreate, true);
             } else {
                 var buttons = this.createNodesFromTemplate('update');
                 buttons.querySelector('.inc').setAttribute('id', 'inc-' + result.key);
                 buttons.querySelector('.dec').setAttribute('id', 'dec-' + result.key);
-                buttons.querySelector('.inc').onclick = this.clickInc;
-                buttons.querySelector('.dec').onclick = this.clickDec;
                 listTemplate.querySelector('.actions').innerHTML = '';
                 listTemplate.querySelector('.actions').appendChild(buttons);
+                listTemplate.querySelector('#inc-' + result.key).addEventListener('click', this.clickInc, true);
+                listTemplate.querySelector('#dec-' + result.key).addEventListener('click', this.clickDec, true);
             }
             this._container.appendChild(listTemplate);
         }
@@ -79,7 +82,9 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
     };
 
     this.clickCreate = function () {
-        console.log(this);
+        var data = JSON.parse(this.getAttribute('data'));
+        data.amount=1;
+        Storer().add(data);
     };
     this.clickInc = function () {
         console.log(this);
