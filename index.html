@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Storer</title>
+    <link rel="stylesheet" href="css/storer.css"/>
+</head>
+<body>
+<div class="sizer100" id="sizer">
+    <div class="searchbox">
+        <input type="text" id="search" placeholder="Search here"/>
+    </div>
+
+    <div class="options">
+        <span class="option">
+            <button class="icon-resize-horizontal" id="resizer">Resize</button>
+        </span>
+    </div>
+
+    <div class="list" id="results"></div>
+</div>
+
+<template id="list-item-template">
+    <div class="list-item">
+        <div class="actions"></div>
+        <div class="amount">1</div>
+        <div class="articulation">x</div>
+        <div class="item-name"></div>
+        <div class="articulation">in</div>
+        <div class="item-location"></div>
+    </div>
+</template>
+
+<template id="list-buttons-create-template">
+    <button class="cre">CREATE</button>
+</template>
+
+<template id="list-buttons-update-template">
+    <button class="inc">+</button>
+    <button class="dec">-</button>
+</template>
+
+
+<script type="text/javascript" src="js/item.js"></script>
+<script type="text/javascript" src="js/storer.js"></script>
+<script type="text/javascript" src="js/finder.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+</body>
+</html>
