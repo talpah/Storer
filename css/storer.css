@@ -52,6 +52,7 @@ body {
 .list .list-item {
     line-height: 32px;
     border-radius: 6px;
+    padding: 6px;
 }
 
 .list .list-item:hover {

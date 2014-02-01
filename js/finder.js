@@ -53,6 +53,9 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
                 var buttons = this.createNodesFromTemplate('update');
                 buttons.querySelector('.inc').setAttribute('id', 'inc-' + result.key);
                 buttons.querySelector('.dec').setAttribute('id', 'dec-' + result.key);
+                buttons.querySelector('.inc').setAttribute('data', JSON.stringify(result));
+                buttons.querySelector('.dec').setAttribute('data', JSON.stringify(result));
+                listTemplate.querySelector('.amount').setAttribute('id', 'amount-' + result.key);
                 listTemplate.querySelector('.actions').innerHTML = '';
                 listTemplate.querySelector('.actions').appendChild(buttons);
                 listTemplate.querySelector('#inc-' + result.key).addEventListener('click', this.clickInc, true);
@@ -61,6 +64,78 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
             this._container.appendChild(listTemplate);
         }
 
+    };
+
+    this.updateAmount = function (key, value) {
+        var amountElement = document.querySelector('amount-' + key);
+        if (amountElement) {
+            amountElement.innerHTML = value;
+        }
+    };
+
+    this.search = function (searchQuery) {
+        /* Split into words and remove empty elements */
+        var words = filterArray(searchQuery.split(' '), '');
+        var location = false;
+
+        /* Initial full search */
+        var searchResults = store.find(words.join(' '));
+
+        /* When word count > 1, the last word is location */
+        if (words.length > 1) {
+            location = words.pop();
+        }
+        /* Reassemble search query, w/out location */
+        var searchedItem = words.join(' ');
+
+        /* If no matches found for full search, try without last word (location) */
+        if (searchResults.length === 0) {
+            /* Search assuming the last word is a location, display below proposed creation */
+            var searchResultsWithLocation = store.find(searchedItem);
+            var locationsFound = [];
+            var fullMatchFound = false;
+            if (searchResultsWithLocation.length > 0) {
+                for (var srwl in searchResultsWithLocation) {
+                    if (location
+                        && searchResultsWithLocation[srwl].location == location
+                        && searchedItem == searchResultsWithLocation[srwl].name
+                        ) {
+                        /* everything matches, put it first */
+                        searchResults.unshift(searchResultsWithLocation[srwl]);
+                        fullMatchFound = true;
+                    } else if (
+                        (location && searchResultsWithLocation[srwl].location == location)
+                            || searchedItem == searchResultsWithLocation[srwl].name
+                        ) {
+                        /* Location matches OR item name matches, put it first */
+                        searchResults.unshift(searchResultsWithLocation[srwl]);
+                        locationsFound.push(searchResultsWithLocation[srwl].location);
+                    } else {
+                        /* just item matches, add it to the bottom */
+                        searchResults.push(searchResultsWithLocation[srwl]);
+                        locationsFound.push(searchResultsWithLocation[srwl].location);
+                    }
+                }
+            }
+            /* Nothing found matching all the words, propose to create item named after the full query */
+            var proposeAdd;
+            if (location) {
+                /* If there's a location specified and the rest of the query
+                 didn't match an item in a known location, suggest adding it  */
+                if (!fullMatchFound) {
+                    /* Propose item in location */
+                    proposeAdd = new Item(searchedItem, location, 'Create 1', true);
+                }
+            } else {
+                proposeAdd = new Item(searchQuery, '...', 'Create 1', true);
+            }
+            if (proposeAdd) {
+                /* Prepend the proposition on top of the list */
+                searchResults.unshift(proposeAdd);
+            }
+        }
+        this.setResults(searchResults);
+        this.render();
     };
 
     this.createNodesFromTemplate = function (template) {
@@ -83,14 +158,22 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
 
     this.clickCreate = function () {
         var data = JSON.parse(this.getAttribute('data'));
-        data.amount=1;
+        data.amount = 1;
         Storer().add(data);
     };
     this.clickInc = function () {
-        console.log(this);
+        var data = JSON.parse(this.getAttribute('data'));
+        data.amount += 1;
+        if (Storer().add(data)) {
+            Finder().updateAmount(data.key, data.amount);
+        }
     };
     this.clickDec = function () {
-        console.log(this);
+        var data = JSON.parse(this.getAttribute('data'));
+        data.amount -= 1;
+        if (Storer().add(data)) {
+            Finder().updateAmount(data.key, data.amount);
+        }
     };
 
     return this;
