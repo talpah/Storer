@@ -8,6 +8,11 @@
  * @constructor
  */
 function Storer() {
+
+    if (typeof (Storage) == "undefined") {
+        throw new Error('Unsupported Storage');
+    }
+
     /** Singleton */
     if (arguments.callee._singletonInstance) return arguments.callee._singletonInstance;
     arguments.callee._singletonInstance = this;
@@ -47,11 +52,6 @@ function Storer() {
     this._items = this._load('items');
     this._locations = this._load('locations');
 
-    /** Can we use storage? */
-    this.isCapable = function () {
-        return typeof (Storage) !== "undefined";
-    };
-
     this.add = function (item) {
         return this._insert(item);
     };
@@ -79,12 +79,7 @@ function Storer() {
             if (this._items.hasOwnProperty(nsr)) {
                 if (this._items[nsr].indexOf(name) > -1 && nsr != key) {
                     results.push(
-                        new Item(
-                            this._items[nsr],
-                            this._locations[this._item2location[nsr].location],
-                            this._item2location[nsr].amount,
-                            false
-                        ));
+                        new Item(this._items[nsr], this._locations[this._item2location[nsr].location], this._item2location[nsr].amount, false));
                 }
             }
         }
@@ -103,12 +98,7 @@ function Storer() {
         for (var nsr in this._items) {
             if (this._items.hasOwnProperty(nsr)) {
                 results.push(
-                    new Item(
-                        this._items[nsr],
-                        this._locations[this._item2location[nsr].location],
-                        this._item2location[nsr].amount,
-                        false
-                    ));
+                    new Item(this._items[nsr], this._locations[this._item2location[nsr].location], this._item2location[nsr].amount, false));
             }
         }
         return results;

@@ -1,4 +1,4 @@
-window.onload = function () {
+$(document).ready(function () {
     store = new Storer();
     finder = new Finder('#results', '#list-item-template', '#list-buttons-create-template', '#list-buttons-update-template');
 
@@ -7,24 +7,9 @@ window.onload = function () {
     finder.setResults(searchResults);
     finder.render();
 
-    searchBox.onkeypress = function (e) {
-        if (e.keyCode == 13) {
-            finder.search(searchBox.value);
-            return false;
-        }
+    $('#searcher').on('submit', function (e) {
+        event.preventDefault();
+        finder.search($('#search').val());
+    });
 
-        return true;
-    };
-};
-
-var resizeButton = document.querySelector('#resizer');
-resizeButton.addEventListener('click', function (e) {
-    var sizer = document.querySelector('#sizer');
-
-    if (sizer.className == 'sizer100') {
-        sizer.className = 'sizer50';
-    } else {
-        sizer.className = 'sizer100';
-    }
 });
-

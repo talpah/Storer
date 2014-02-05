@@ -1,47 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Storer</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-theme.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/storer.css"/>
 </head>
-<body>
-<div class="sizer100" id="sizer">
-    <div class="searchbox">
-        <input type="text" id="search" placeholder="Search here" autofocus />
-    </div>
+<body role="document">
+<div class="container theme-showcase" role="main">
+    <div class="spacer"></div>
+    <form role="form" id="searcher" action="" autocomplete="off">
+        <div class="searchbox input-group">
+            <input type="text" id="search" class="form-control" placeholder="Search here"/>
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">Go!</button>
+            </span>
+        </div>
+    </form>
 
-    <div class="options">
-        <span class="option">
-            <button class="icon-resize-horizontal" id="resizer">Resize</button>
-        </span>
-    </div>
+    <div class="spacer"></div>
 
-    <div class="list" id="results"></div>
+    <ul class="list list-unstyled" id="results"></ul>
 </div>
 
 <template id="list-item-template">
-    <div class="list-item">
-        <div class="actions"></div>
+    <li class="list-item">
+        <div class="actions pull-right"></div>
         <div class="amount">1</div>
         <div class="articulation">x</div>
         <div class="item-name"></div>
         <div class="articulation">in</div>
         <div class="item-location"></div>
-    </div>
+    </li>
 </template>
 
 <template id="list-buttons-create-template">
-    <button class="cre">CREATE</button>
+    <div class="buttons">
+        <button class="cre btn btn-primary btn-sm">CREATE</button>
+    </div>
 </template>
 
 <template id="list-buttons-update-template">
-    <button class="inc">+</button>
-    <button class="dec">-</button>
+    <div class="buttons">
+        <button class="inc btn btn-info btn-sm">+</button>
+        <button class="dec btn btn-info btn-sm">-</button>
+    </div>
 </template>
 
-
-<script type="text/javascript" src="js/general.js"></script>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/item.js"></script>
 <script type="text/javascript" src="js/storer.js"></script>
 <script type="text/javascript" src="js/finder.js"></script>
