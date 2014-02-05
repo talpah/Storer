@@ -27,8 +27,10 @@ function Storer() {
         },
         item2location: {
             item_key: {
-                location: "location_key",
-                amount: 1
+                location_key: {
+                    location: "location_key",
+                    amount: 1
+                }
             }
         }
     };
@@ -60,13 +62,18 @@ function Storer() {
         name = name.trim();
         var results = [];
         var key = this._getKey(name);
+        var itemName = '';
 
         if (this._items.hasOwnProperty(key)) {
-            results.push(
-                new Item(
-                    this._items[key],
-                    this._locations[this._item2location[key].location],
-                    this._item2location[key].amount));
+            itemName = this._items[key];
+            $.each(this._item2location[key], function (index, element) {
+                results.push(
+                    new Item(
+                        itemName,
+                        element.location,
+                        element.amount));
+
+            });
         }
 
         /* If we have one by key and strict was requested, return here */
@@ -78,8 +85,14 @@ function Storer() {
         for (var nsr in this._items) {
             if (this._items.hasOwnProperty(nsr)) {
                 if (this._items[nsr].indexOf(name) > -1 && nsr != key) {
-                    results.push(
-                        new Item(this._items[nsr], this._locations[this._item2location[nsr].location], this._item2location[nsr].amount, false));
+                    itemName = this._items[nsr];
+                    $.each(this._item2location[nsr], function (index, element) {
+                        results.push(
+                            new Item(
+                                itemName,
+                                element.location,
+                                element.amount));
+                    });
                 }
             }
         }
@@ -95,27 +108,41 @@ function Storer() {
      */
     this.findAll = function () {
         var results = [];
+        var itemName = '';
         for (var nsr in this._items) {
             if (this._items.hasOwnProperty(nsr)) {
-                results.push(
-                    new Item(this._items[nsr], this._locations[this._item2location[nsr].location], this._item2location[nsr].amount, false));
+                itemName = this._items[nsr];
+                $.each(this._item2location[nsr], function (index, element) {
+                    results.push(
+                        new Item(
+                            itemName,
+                            element.location,
+                            element.amount));
+                });
             }
         }
         return results;
     };
 
     this._insert = function (item) {
+        // Create item in items if it doesn't exists
         if (!this._items.hasOwnProperty(this._getKey(item.name))) {
             this._items[this._getKey(item.name)] = item.name;
             this._save('items', this._items);
         }
 
+        // Create location in locations if it doesn't exists
         if (!this._locations.hasOwnProperty(this._getKey(item.location))) {
             this._locations[this._getKey(item.location)] = item.location;
             this._save('locations', this._locations);
         }
 
-        this._item2location[this._getKey(item.name)] = {
+        // Create item2location if it doesn't exists
+        if (!this._item2location.hasOwnProperty(this._getKey(item.name))) {
+            this._item2location[this._getKey(item.name)] = { };
+            this._item2location[this._getKey(item.name)][this._getKey(item.location)] = { };
+        }
+        this._item2location[this._getKey(item.name)][this._getKey(item.location)] = {
             location: this._getKey(item.location),
             amount: item.amount
         };

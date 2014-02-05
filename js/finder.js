@@ -28,6 +28,7 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
     };
 
     this.render = function () {
+        var $this = this;
         this._container.empty();
         if (this._results.length == 0) {
             this._container.prepend($('<span>Nothing found.</span>'));
@@ -40,7 +41,7 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
             var result = this._results[resultIndex];
             var listTemplate = this.createNodesFromTemplate('list');
             listTemplate.find('.item-name').text(result.name);
-            listTemplate.find('.item-location').text(result.location);
+            listTemplate.find('.item-location').text(result.location ? result.location : '...');
             listTemplate.find('.amount').text(result.amount);
 
             if (result.isVirtual) {
@@ -52,14 +53,26 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
                 listTemplate.find('#create-item-' + result.key).on('click', this.clickCreate);
             } else {
                 var buttons = this.createNodesFromTemplate('update');
-                buttons.find('.inc').attr('id', 'inc-' + result.key);
-                buttons.find('.dec').attr('id', 'dec-' + result.key);
+                buttons.find('.inc').attr('id', 'inc-' + result.key + '-' + result.location);
+                buttons.find('.dec').attr('id', 'dec-' + result.key + '-' + result.location);
                 buttons.find('.inc').attr('data', JSON.stringify(result));
                 buttons.find('.dec').attr('data', JSON.stringify(result));
-                listTemplate.find('.amount').attr('id', 'amount-' + result.key);
+                listTemplate.find('.amount').attr('id', 'amount-' + result.key + '-' + result.location);
                 listTemplate.find('.actions').empty().append(buttons);
-                listTemplate.find('#inc-' + result.key).on('click', this.clickInc);
-                listTemplate.find('#dec-' + result.key).on('click', this.clickDec);
+                listTemplate.find('#inc-' + result.key + '-' + result.location)
+                    .on('click', this.clickInc)
+                ;
+                listTemplate.find('#dec-' + result.key + '-' + result.location)
+                    .on('click', this.clickDec)
+                    .on('mouseup',function () {
+                        clearTimeout($(this).data('pressTimer'));
+                        // Clear timeout
+                        return false;
+                    }).on('mousedown', function () {
+                        // Set timeout
+                        $(this).data('pressTimer', window.setTimeout($this.clickRemove, 1000));
+                        return false;
+                    });
             }
             this._container.append(listTemplate);
         }
@@ -67,9 +80,12 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
     };
 
     this.updateAmount = function (data) {
-        var amountElement = $('#amount-' + data.key);
+        var amountElement = $('#amount-' + data.key + '-' + data.location);
         if (amountElement) {
-            var updatatableElements = $('#amount-' + data.key + ', #inc-' + data.key + ', #dec-' + data.key);
+            var updatatableElements = $(
+                '#amount-' + data.key + '-' + data.location +
+                    ', #inc-' + data.key + '-' + data.location +
+                    ', #dec-' + data.key + '-' + data.location);
             updatatableElements.attr('data', JSON.stringify(data));
             amountElement.text(data.amount);
         }
@@ -119,8 +135,14 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
                         (location && searchResultsWithLocation[srwl].location == location)
                             || searchedItem == searchResultsWithLocation[srwl].name
                         ) {
-                        /* Location matches OR item name matches, put it first */
-                        searchResults.unshift(searchResultsWithLocation[srwl]);
+                        /* Location matches OR item name matches, put it firstish */
+                        if (!fullMatchFound) {
+                            searchResults.unshift(searchResultsWithLocation[srwl]);
+                        } else {
+                            var fullMatch = searchResults.shift();
+                            searchResults.unshift(searchResultsWithLocation[srwl]);
+                            searchResults.unshift(fullMatch);
+                        }
                         locationsFound.push(searchResultsWithLocation[srwl].location);
                     } else {
                         /* just item matches, add it to the bottom */
@@ -139,7 +161,7 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
                     proposeAdd = new Item(searchedItem, location, 'Create 1', true);
                 }
             } else {
-                proposeAdd = new Item(searchQuery, '...', 'Create 1', true);
+                proposeAdd = new Item(searchQuery, false, 'Create 1', true);
             }
             if (proposeAdd) {
                 /* Prepend the proposition on top of the list */
@@ -178,6 +200,16 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
          * @this {Element}
          */
         var data = JSON.parse($(this).attr('data'));
+        if (!data.location) {
+            $(this)
+                .addClass('btn-danger')
+                .parents('.list-item')
+                .children('.item-location')
+                .addClass('text-danger')
+                .addClass('bg-warning')
+                .html('Type a location above...');
+            return true;
+        }
         data.amount = 1;
         Storer().add(data);
         Finder().search();
@@ -202,6 +234,11 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
         if (Storer().add(data)) {
             Finder().updateAmount(data);
         }
+    };
+
+    this.clickRemove = function () {
+
+        alert('Remove from storage: todo');
     };
 
     return this;

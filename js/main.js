@@ -7,9 +7,17 @@ $(document).ready(function () {
     finder.setResults(searchResults);
     finder.render();
 
-    $('#searcher').on('submit', function (e) {
-        event.preventDefault();
-        finder.search($('#search').val());
-    });
+    $('#searcher')
+        .on('submit', function (e) {
+            event.preventDefault();
+            finder.search($('#search').val());
+            $('#clearer').prop('disabled', false);
+        })
+        .on('reset', function (e) {
+            var searchResults = store.findAll();
+            finder.setResults(searchResults);
+            finder.render();
+            $('#clearer').prop('disabled', true);
+        });
 
 });

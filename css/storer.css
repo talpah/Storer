@@ -4,9 +4,6 @@
     border-radius: 6px;
     padding: 2px 6px;
 }
-.list .list-item:hover {
-    background-color: #fcf8e3;
-}
 
 .list-item div {
     display: inline-block;
