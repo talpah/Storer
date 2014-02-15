@@ -47,6 +47,12 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
             if (result.isVirtual) {
                 var createButton = this.createNodesFromTemplate('create');
                 createButton.find('button').attr('id', 'create-item-' + result.key);
+                createButton.find('.create-hint').addClass('hidden');
+                if (!result.location) {
+                    createButton.find('button').addClass('btn-danger');
+                } else {
+                    createButton.find('.create-hint').removeClass('hidden');
+                }
                 createButton.find('button').attr('data', JSON.stringify(result));
                 listTemplate.find('.amount').attr('id', 'amount-' + result.key);
                 listTemplate.find('.actions').empty().append(createButton);
@@ -60,8 +66,7 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
                 listTemplate.find('.amount').attr('id', 'amount-' + result.key + '-' + result.location);
                 listTemplate.find('.actions').empty().append(buttons);
                 listTemplate.find('#inc-' + result.key + '-' + result.location)
-                    .on('click', this.clickInc)
-                ;
+                    .on('click', this.clickInc);
                 listTemplate.find('#dec-' + result.key + '-' + result.location)
                     .on('click', this.clickDec)
                     .on('mouseup',function () {
@@ -93,7 +98,7 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
 
     this.search = function (searchQuery) {
         searchQuery = searchQuery || this._lastSearchQuery;
-        if (searchQuery == '') {
+        if (!searchQuery) {
             return;
         }
         this._lastSearchQuery = searchQuery;
@@ -213,6 +218,7 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
         data.amount = 1;
         Storer().add(data);
         Finder().search();
+        return true;
     };
     this.clickInc = function () {
         /**
@@ -237,7 +243,6 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
     };
 
     this.clickRemove = function () {
-
         alert('Remove from storage: todo');
     };
 

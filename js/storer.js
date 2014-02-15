@@ -36,6 +36,16 @@ function Storer() {
     };
 
 
+    /**
+     * METHODS
+     */
+
+    /**
+     *
+     * @param what
+     * @returns {*}
+     * @private
+     */
     this._load = function (what) {
         var data = localStorage.getItem('storer.' + what);
         return data ? JSON.parse(data) : {};
@@ -150,6 +160,17 @@ function Storer() {
 
         return true;
     };
+
+    /**
+     * DEBUG
+     */
+    this.debug = function () {
+        ;
+        $('#lsicount').text(Object.keys(this._load('items')).length);
+        $('#lslcount').text(Object.keys(this._load('locations')).length);
+    };
+
+    this.debug();
 
     return this;
 
