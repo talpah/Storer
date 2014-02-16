@@ -54,6 +54,7 @@ function Finder(container, listTemplate, createButtonTemplate, updateButtonTempl
                     createButton.find('.create-hint').removeClass('hidden');
                 }
                 createButton.find('button').attr('data', JSON.stringify(result));
+                listTemplate.addClass('bg-success');
                 listTemplate.find('.amount').attr('id', 'amount-' + result.key);
                 listTemplate.find('.actions').empty().append(createButton);
                 listTemplate.find('#create-item-' + result.key).on('click', this.clickCreate);

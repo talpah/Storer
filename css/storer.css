@@ -1,6 +1,19 @@
+.padded15 {
+    padding: 15px 0;
+}
+
+.debug-toolbar {
+    border-radius: 6px;
+    font-size: 16px;
+}
+.debug-toolbar  span{
+    line-height: 26px;
+
+}
 
 .list .list-item {
-    line-height: 40px;
+    font-size: 16px;
+    line-height: 50px;
     border-radius: 6px;
     padding: 2px 6px;
 }

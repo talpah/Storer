@@ -30,17 +30,19 @@
     <div class="spacer"></div>
 
     <ul class="list list-unstyled" id="results"></ul>
-    <div class="debug-toolbar">
-        <div class="col-lg-2">
-            <button onclick="localStorage.clear(); window.location.reload()">reset storage</button>
+    <div class="debug-toolbar bg-info padded15">
+        <div class="col-lg-2 col-sm-4 col-xs-4">
+            <button onclick="if (confirm('Sure?')) { localStorage.clear(); window.location.reload()}">reset storage</button>
         </div>
-        <div id="stats" class="col-lg-2 pull-right bg-warning">
+        <div id="stats" class="col-lg-4 col-sm-4 pull-right text-right">
             <span id="lsicount">?</span> items.
             <span id="lslcount">?</span> locations.
         </div>
         <div class="clearfix"></div>
     </div>
 </div>
+
+
 <template id="list-item-template">
     <li class="list-item">
         <div class="actions pull-right"></div>
@@ -54,7 +56,7 @@
 
 <template id="list-buttons-create-template">
     <div class="buttons">
-        <span class="create-hint hidden text-info">To save, hit [Return] again, or click</span>
+        <span class="create-hint hidden text-muted">To save, hit [Return] again, or click</span>
         <button class="cre btn btn-primary btn-sm">CREATE</button>
     </div>
 </template>
